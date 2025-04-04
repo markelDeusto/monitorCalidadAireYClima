@@ -4,6 +4,12 @@ import requests
 
 ui = Blueprint('ui', __name__, template_folder='templates')
 
+# app/ui/interfaz.py
+from flask import Blueprint, render_template
+import requests
+
+ui = Blueprint('ui', __name__, template_folder='templates')
+
 def obtener_datos_clima():
     url = "http://127.0.0.1:5000/api/aire-clima/actual"
     response = requests.get(url)
@@ -11,6 +17,26 @@ def obtener_datos_clima():
         return response.json()
     return {"error": "No se pudo obtener el dato"}
 
+@ui.route('/')
+def mostrar_interfaz():
+    datos = obtener_datos_clima()
+    temperatura = datos.get("weather", {}).get("current_weather", {}).get("temperature", "N/A")
+    
+    # Acceder al primer valor de las listas de PM10 y PM2.5
+    air_quality = datos.get("air_quality", {}).get("hourly", {})
+    pm10 = air_quality.get("pm10", ["N/A"])[0]  # Primer valor de la lista
+    pm2_5 = air_quality.get("pm2_5", ["N/A"])[0]  # Primer valor de la lista
+    
+    calidad_aire = calcular_calidad_aire(pm10, pm2_5)
+    return render_template(
+        'index.html',
+        temperatura=temperatura,
+        pm10=pm10,
+        pm2_5=pm2_5,
+        calidad_aire=calidad_aire
+    )
+    
+    
 def calcular_calidad_aire(pm10, pm2_5):
     if pm10 == "N/A" or pm2_5 == "N/A":
         return "Datos no disponibles"
@@ -25,14 +51,4 @@ def calcular_calidad_aire(pm10, pm2_5):
     else:
         return "Muy buena"
     
-    
-@ui.route('/')
-def mostrar_interfaz():
-    datos = obtener_datos_clima()
-    temperatura = datos.get("current", {}).get("temperature_2m", "N/A")
-    pm10 = datos.get("current", {}).get("pm10", "N/A")
-    pm2_5 = datos.get("current", {}).get("pm2_5", "N/A")
-    calidad_aire = calcular_calidad_aire(pm10, pm2_5)
-    return render_template('index.html', temperatura=temperatura, pm10=pm10, pm2_5=pm2_5, calidad_aire=calidad_aire)
-
 
