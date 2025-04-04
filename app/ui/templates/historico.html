@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis Histórico del Clima</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            line-height: 1.6;
+        }
+        h1 { color: #2c3e50; text-align: center; }
+        h2 { color: #3498db; margin-top: 20px; }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .stat-block {
+            background-color: #fff;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .stat-value {
+            font-weight: bold;
+            color: #2980b9;
+        }
+        .recommendation {
+            background-color: #e8f4f8;
+            padding: 10px;
+            margin: 5px 0;
+            border-left: 4px solid #3498db;
+        }
+        .trend-up { color: #e74c3c; }
+        .trend-down { color: #27ae60; }
+        .trend-stable { color: #f39c12; }
+        form {
+            margin: 20px 0;
+            padding: 15px;
+            background: #eee;
+            border-radius: 5px;
+        }
+        button, input[type="submit"] {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover, input[type="submit"]:hover {
+            background-color: #2980b9;
+        }
+        .navigation {
+            margin: 20px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Análisis Histórico del Clima</h1>
+        
+        <div class="navigation">
+            <a href="/"><button>Ver Clima Actual</button></a>
+        </div>
+        
+        <form method="GET" action="/historico">
+            <h3>Consultar datos históricos</h3>
+            <div>
+                <input type="text" name="ciudad" value="{{ ciudad }}" placeholder="Introduce una ciudad" required>
+                <select name="dias">
+                    <option value="3" {% if dias == 3 %}selected{% endif %}>Últimos 3 días</option>
+                    <option value="7" {% if dias == 7 %}selected{% endif %}>Última semana</option>
+                    <option value="14" {% if dias == 14 %}selected{% endif %}>Últimos 14 días</option>
+                    <option value="30" {% if dias == 30 %}selected{% endif %}>Último mes</option>
+                </select>
+                <input type="submit" value="Analizar">
+            </div>
+        </form>
+        
+        {% if error %}
+        <div class="stat-block" style="background-color: #ffeeee; border-left: 4px solid #e74c3c;">
+            <p>{{ error }}</p>
+        </div>
+        {% endif %}
+        
+        {% if informe %}
+        <h2>Tendencias detectadas para {{ ciudad }}</h2>
+        
+        <div class="stat-block">
+            <h3>Temperatura</h3>
+            <p>Temperatura máxima promedio: <span class="stat-value">{{ informe.temperatura.max_promedio }}°C</span></p>
+            <p>Temperatura mínima promedio: <span class="stat-value">{{ informe.temperatura.min_promedio }}°C</span></p>
+            <p>Temperatura máxima registrada: <span class="stat-value">{{ informe.temperatura.max_registrada }}°C</span></p>
+            <p>Temperatura mínima registrada: <span class="stat-value">{{ informe.temperatura.min_registrada }}°C</span></p>
+            <p>Variación térmica: <span class="stat-value">{{ informe.temperatura.variacion }}°C</span></p>
+            
+            {% if informe.tendencias.temperatura %}
+            <p>
+                Tendencia: 
+                <span class="
+                    {% if informe.tendencias.temperatura == 'al alza' %}trend-up
+                    {% elif informe.tendencias.temperatura == 'a la baja' %}trend-down
+                    {% else %}trend-stable{% endif %}
+                ">
+                    {{ informe.tendencias.temperatura }}
+                    {% if informe.tendencias.temperatura == 'al alza' %}↗{% elif informe.tendencias.temperatura == 'a la baja' %}↘{% else %}→{% endif %}
+                </span>
+            </p>
+            {% endif %}
+        </div>
+        
+        <div class="stat-block">
+            <h3>Calidad del aire</h3>
+            <p>Nivel promedio de PM10: <span class="stat-value">{{ informe.calidad_aire.pm10_promedio }} µg/m³</span></p>
+            <p>Nivel promedio de PM2.5: <span class="stat-value">{{ informe.calidad_aire.pm25_promedio }} µg/m³</span></p>
+            <p>Nivel máximo de PM10: <span class="stat-value">{{ informe.calidad_aire.pm10_max }} µg/m³</span></p>
+            <p>Nivel máximo de PM2.5: <span class="stat-value">{{ informe.calidad_aire.pm25_max }} µg/m³</span></p>
+            <p>Días con calidad de aire deficiente: <span class="stat-value">{{ informe.calidad_aire.dias_calidad_mala }}</span></p>
+            
+            {% if informe.tendencias.calidad_aire %}
+            <p>
+                Tendencia: 
+                <span class="
+                    {% if informe.tendencias.calidad_aire == 'empeorando' %}trend-up
+                    {% elif informe.tendencias.calidad_aire == 'mejorando' %}trend-down
+                    {% else %}trend-stable{% endif %}
+                ">
+                    {{ informe.tendencias.calidad_aire }}
+                    {% if informe.tendencias.calidad_aire == 'empeorando' %}↗{% elif informe.tendencias.calidad_aire == 'mejorando' %}↘{% else %}→{% endif %}
+                </span>
+            </p>
+            {% endif %}
+        </div>
+        
+        {% if informe.recomendaciones %}
+        <div class="stat-block">
+            <h3>Recomendaciones</h3>
+            {% for recomendacion in informe.recomendaciones %}
+            <div class="recommendation">{{ recomendacion }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        {% endif %}
+    </div>
+</body>
+</html>
