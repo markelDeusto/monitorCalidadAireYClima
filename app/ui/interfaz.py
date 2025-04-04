@@ -54,7 +54,8 @@ def mostrar_interfaz():
         temperatura=temperatura,
         pm10=pm10,
         pm2_5=pm2_5,
-        calidad_aire=calidad_aire
+        calidad_aire=calidad_aire,
+        request=request
     )
     
     
@@ -71,5 +72,56 @@ def calcular_calidad_aire(pm10, pm2_5):
         return "Buena"
     else:
         return "Muy buena"
+
+# Nueva función para obtener coordenadas de una ciudad
+def obtener_coordenadas(ciudad):
+    geocoding_url = "https://nominatim.openstreetmap.org/search"
+    geocoding_params = {
+        "q": ciudad,
+        "format": "json",
+        "limit": 1
+    }
+    headers = {
+        "User-Agent": "mi-aplicacion-clima/1.0 (contacto@example.com)"
+    }
+    try:
+        geocoding_response = requests.get(geocoding_url, params=geocoding_params, headers=headers)
+        if geocoding_response.status_code == 200 and geocoding_response.text.strip():
+            geocoding_data = geocoding_response.json()
+            if geocoding_data:
+                location = geocoding_data[0]
+                return float(location["lat"]), float(location["lon"])
+    except Exception as e:
+        print(f"Error al obtener coordenadas: {e}")
     
+    return None, None
+
+@ui.route('/historico')
+def mostrar_historico():
+    ciudad = request.args.get("ciudad", "Vitoria")
+    dias = int(request.args.get("dias", 7))
+    
+    # Conseguir las coordenadas de la ciudad
+    latitude, longitude = obtener_coordenadas(ciudad)
+    
+    if latitude is None or longitude is None:
+        return render_template('historico.html', error="No se pudo obtener la ubicación", ciudad=ciudad, dias=dias)
+    
+    # Llamar a la API de datos históricos
+    url = f"http://127.0.0.1:5000/api/aire-clima/historico"
+    response = requests.get(url, params={"latitude": latitude, "longitude": longitude, "dias": dias})
+    
+    if response.status_code != 200:
+        return render_template('historico.html', error="Error al obtener datos históricos", ciudad=ciudad, dias=dias)
+    
+    datos = response.json()
+    informe = datos.get("informe", {})
+    
+    return render_template(
+        'historico.html',
+        ciudad=ciudad,
+        dias=dias,
+        informe=informe
+    )
+
 

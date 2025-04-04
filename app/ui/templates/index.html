@@ -9,6 +9,19 @@
         body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
         h1 { color: #333; }
         .temp { font-size: 24px; font-weight: bold; }
+        .btn-group { margin: 20px 0; }
+        button { 
+            padding: 8px 16px; 
+            margin: 0 10px; 
+            background-color: #4CAF50; 
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+        }
+        button:hover { background-color: #45a049; }
+        .historico-btn { background-color: #2196F3; }
+        .historico-btn:hover { background-color: #0b7dda; }
     </style>
 </head>
 <body>
@@ -21,6 +34,9 @@
     <p>PM10: {{ pm10 if pm10 != "N/A" else "Datos no disponibles" }} µg/m³</p>
     <p>PM2.5: {{ pm2_5 if pm2_5 != "N/A" else "Datos no disponibles" }} µg/m³</p>
     <p>Calidad del aire: {{ calidad_aire }}</p>
-    <button onclick="window.location.reload();">Actualizar</button>
+    <div class="btn-group">
+        <button onclick="window.location.reload();">Actualizar</button>
+        <button class="historico-btn" onclick="var urlParams = new URLSearchParams(window.location.search); var ciudad = urlParams.get('ciudad') || 'Vitoria'; window.location.href='/historico?ciudad=' + ciudad;">Ver análisis histórico</button>
+    </div>
 </body>
 </html>
