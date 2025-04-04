@@ -13,6 +13,10 @@
 </head>
 <body>
     <h1>🌤 Clima Actual</h1>
+    <form method="GET" action="/">
+        <input type="text" name="ciudad" placeholder="Introduce una ciudad" required>
+        <button type="submit">Buscar</button>
+    </form>
     <p class="temp">Temperatura: {{ temperatura }}°C</p>
     <p>PM10: {{ pm10 if pm10 != "N/A" else "Datos no disponibles" }} µg/m³</p>
     <p>PM2.5: {{ pm2_5 if pm2_5 != "N/A" else "Datos no disponibles" }} µg/m³</p>
