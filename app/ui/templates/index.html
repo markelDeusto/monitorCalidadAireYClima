@@ -1,0 +1,20 @@
+<!-- app/ui/templates/index.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clima Actual</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+        h1 { color: #333; }
+        .temp { font-size: 24px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>🌤 Clima Actual</h1>
+    <p class="temp">Temperatura: {{ temperatura }}°C</p>
+    <button onclick="window.location.reload();">Actualizar</button>
+</body>
+</html>
+
