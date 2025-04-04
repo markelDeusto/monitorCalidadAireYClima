@@ -3,15 +3,30 @@ import requests
 
 class AireYClimaFacade:
     def __init__(self):
-        self.api_url = "https://api.open-meteo.com/v1/forecast"
-        self.params = {
+        self.weather_api_url = "https://api.open-meteo.com/v1/forecast"
+        self.air_quality_api_url = "https://air-quality-api.open-meteo.com/v1/air-quality"
+        self.weather_params = {
             "latitude": 40.4,
             "longitude": -3.7,
-            "current": ["temperature_2m", "pm10", "pm2_5"]  # Se agregan PM10 y PM2.5
+            "current_weather": True
+        }
+        self.air_quality_params = {
+            "latitude": 40.4,
+            "longitude": -3.7,
+            "hourly": "pm10,pm2_5"
         }
 
     def recoger_ultimo_dato(self):
-        response = requests.get(self.api_url, params=self.params)
-        if response.status_code == 200:
-            return response.json()
-        return {"error": "No se pudo obtener el dato"}
+        # Obtener datos del clima actual
+        weather_response = requests.get(self.weather_api_url, params=self.weather_params)
+        weather_data = weather_response.json() if weather_response.status_code == 200 else {}
+
+        # Obtener datos de calidad del aire
+        air_quality_response = requests.get(self.air_quality_api_url, params=self.air_quality_params)
+        air_quality_data = air_quality_response.json() if air_quality_response.status_code == 200 else {}
+
+        # Combinar los datos
+        return {
+            "weather": weather_data,
+            "air_quality": air_quality_data
+        }
