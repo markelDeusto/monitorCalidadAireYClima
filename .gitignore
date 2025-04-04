@@ -1,1 +1,41 @@
-__pycache__/\n*.pyc\n.env
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+.venv/
+venv/
+ENV/
+env/
+
+# Environment variables
+.env
+.env.*
+
+# Logs
+*.log
+logs/
+
+# Flask session files
+flask_session/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# IDE configurations
+.idea/
+.vscode/
+*.sublime-*
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Generated data files
+data/
+output/
+reports/
