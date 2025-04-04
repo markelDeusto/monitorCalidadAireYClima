@@ -2,6 +2,9 @@
 __pycache__/
 *.py[cod]
 *$py.class
+app/api/__pycache__/
+app/facade/__pycache__/
+app/ui/__pycache__/
 
 # Virtual environment
 .venv/
