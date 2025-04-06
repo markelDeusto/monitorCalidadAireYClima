@@ -21,7 +21,7 @@ def obtener_datos_clima(ciudad):
     if geocoding_response.status_code == 200 and geocoding_response.text.strip():
         try:
             geocoding_data = geocoding_response.json()
-            if geocoding_data:
+            if geocoding_data and len(geocoding_data) > 0:
                 location = geocoding_data[0]
                 latitude = location["lat"]
                 longitude = location["lon"]
