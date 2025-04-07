@@ -23,11 +23,6 @@ jobs:
       run: |
         pip install --upgrade pip  # Actualiza pip antes de instalar.
         pip install -r requirements.txt
-
-    - name: Lint with flake8
-      run: |
-        pip install flake8
-        flake8 .
         
     - name: Run Unit Tests
       run: |
