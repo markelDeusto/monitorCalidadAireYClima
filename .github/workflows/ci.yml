@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'  # Especifica una versión concreta de Python.
+
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip  # Actualiza pip antes de instalar.
+        pip install -r requirements.txt
+
+    - name: Lint with flake8
+      run: |
+        pip install flake8
+        flake8 .
+    - name: Run Unit Tests
+      run: |
+        pip install pytest
+        pytest UnitaryTests --maxfail=1 --disable-warnings -q
